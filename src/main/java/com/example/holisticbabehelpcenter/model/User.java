@@ -1,5 +1,6 @@
 package com.example.holisticbabehelpcenter.model;
 import com.example.holisticbabehelpcenter.enumeration.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -39,6 +40,9 @@ public class User implements UserDetails {
     @Transient
     private static byte[] defaultProfileImage;
     private Integer phoneNumber;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Reclamation> reclamations;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -46,6 +50,7 @@ public class User implements UserDetails {
         authorities.add(() -> role.name());
         return authorities;
     }
+
     @Override
     public String getPassword() {
         return password;

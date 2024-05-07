@@ -157,4 +157,8 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User getUserById(String l) {
+        return userRepository.getUserByEmail(l);
+    }
 }

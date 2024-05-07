@@ -40,6 +40,9 @@ public class SecurityConfiguration  {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers( "/user/Register","/user/auth","/user/ConfirmAccount/**","/user/forgot-password/**").permitAll()
                                 .requestMatchers("/config/disableAccount/**", "/config/enableAccount/**","/config/registerAdmin","/config/getAllUsers").hasAnyRole("ADMIN")
+                                .requestMatchers("/reclamations/","/reclamations/user/**","/reclamations/reclamation/resolve/").hasRole("ADMIN")
+                                .requestMatchers("/reclamations/create/**").hasRole("USER")
+                                .requestMatchers("/ws/**").permitAll()
                                 .requestMatchers("/profile/**").authenticated()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

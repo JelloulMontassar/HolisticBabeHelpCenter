@@ -5,11 +5,14 @@ import com.example.holisticbabehelpcenter.dto.RegisterRequest;
 import com.example.holisticbabehelpcenter.dto.RegisterResponse;
 import com.example.holisticbabehelpcenter.enumeration.Role;
 import com.example.holisticbabehelpcenter.exceptions.UserException;
+import com.example.holisticbabehelpcenter.model.Notification;
 import com.example.holisticbabehelpcenter.model.User;
+import com.example.holisticbabehelpcenter.service.NotificationService;
 import com.example.holisticbabehelpcenter.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final NotificationService notificationService;
     Map<String, String> response = new HashMap<>();
     @PutMapping("/disableAccount/{userId}")
     public ResponseEntity<Map<String, String>> disableAccount(@PathVariable Long userId) {
@@ -91,6 +95,14 @@ public class UserController {
             String errorMessage = "An error occurred while fetching users.";
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
+    }
+    @GetMapping("/notifications")
+    public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
+        User user  = userService.getUserByEmail(authentication.getName());
+        System.out.println(user.getEmail());
+        List<Notification> notifications = notificationService.getLatestNotifications(user);
+        System.out.println(notifications.size());
+        return ResponseEntity.status(HttpStatus.OK).body(notifications);
     }
 
 }
