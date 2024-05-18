@@ -24,9 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.security.Key;
 import java.security.SecureRandom;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 @RestController
@@ -39,6 +37,7 @@ public class AuthenticationController {
     private final UserService userService;
     private final ForgotPasswordService forgotPasswordService;
     private static final String CONFIRMATION_URL = "";
+    public static Set<String> onlineUsers = new HashSet<>();
 
 
     @GetMapping("/logout")
@@ -46,7 +45,16 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().getAuthentication().getName();
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
+        onlineUsers.remove(SecurityContextHolder.getContext().getAuthentication().getName());
         return ResponseEntity.status(HttpStatus.OK).body("Logged out successfully");
+    }
+    @GetMapping("/onlineUsers")
+    public List<User> getOnlineUsers() {
+        List<User> usersByEmail = new ArrayList<>();
+        for (String email : onlineUsers) {
+            usersByEmail.add(userService.getUserByEmail(email));
+        }
+        return usersByEmail;
     }
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -118,6 +126,7 @@ public class AuthenticationController {
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
         try {
             AuthenticationResponse response = userService.authenticate(request);
+            onlineUsers.add(response.getEmail());
             return ResponseEntity.ok(response);
         } catch (UserException e) {
             System.out.println(e.getMessage());
