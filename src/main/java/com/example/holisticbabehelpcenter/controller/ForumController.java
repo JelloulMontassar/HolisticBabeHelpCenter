@@ -1,6 +1,7 @@
 package com.example.holisticbabehelpcenter.controller;
 
 import com.example.holisticbabehelpcenter.dto.CategoryDTO;
+import com.example.holisticbabehelpcenter.dto.PostDTO;
 import com.example.holisticbabehelpcenter.dto.ThreadsDTO;
 import com.example.holisticbabehelpcenter.model.*;
 import com.example.holisticbabehelpcenter.repository.CategoryRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,21 +92,30 @@ public class ForumController {
         forumService.deleteThread(id);
     }
 
-    @PostMapping("/posts")
-    public Post createPost(@RequestParam Long threadId, @RequestParam String content, Authentication authentication) {
+    @PostMapping("/posts/{threadId}")
+    public PostDTO createPost(@PathVariable Long threadId, @RequestBody PostDTO postDTO, Authentication authentication) {
         Threads thread = threadRepository.findById(threadId).orElseThrow(() -> new RuntimeException("Thread not found"));
         User author = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
-        return forumService.createPost(thread, content, author);
+        Post post = new Post();
+        post.setAuthor(author);
+        post.setThreads(thread);
+        post.setContent(postDTO.getContent());
+        post.setCreatedAt(LocalDateTime.now());
+        Post createdPost = forumService.createPost(thread, post.getContent(), author);
+        return modelMapper.map(createdPost, PostDTO.class);
     }
 
-    @GetMapping("/posts")
-    public List<Post> getPosts() {
-        return forumService.getAllPosts();
+    @GetMapping("/threads/{threadId}/posts")
+    public List<PostDTO> getPostsByThreadId(@PathVariable Long threadId) {
+        List<Post> posts = forumService.getPostsByThreadId(threadId);
+        return posts.stream()
+                .map(post -> modelMapper.map(post, PostDTO.class))
+                .collect(Collectors.toList());
     }
-
     @GetMapping("/posts/{id}")
-    public Post getPost(@PathVariable Long id) {
-        return forumService.getPostById(id);
+    public PostDTO getPost(@PathVariable Long id) {
+        Post post = forumService.getPostById(id);
+        return modelMapper.map(post, PostDTO.class);
     }
 
     @PutMapping("/posts")

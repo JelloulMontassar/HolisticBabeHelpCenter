@@ -24,6 +24,11 @@ public class ForumService {
         category.setName(name);
         return categoryRepository.save(category);
     }
+    public List<Post> getPostsByThreadId(Long threadId) {
+        Threads thread = threadRepository.findById(threadId)
+                .orElseThrow(() -> new RuntimeException("Thread not found"));
+        return thread.getPosts();
+    }
     public List<Threads> getThreadsByCategoryId(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
