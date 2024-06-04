@@ -1,4 +1,5 @@
 package com.example.holisticbabehelpcenter.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class Comment {
     private Long id;
     @ManyToOne
     private User author;
+    @JsonIgnore
     @ManyToOne
     private Post post;
     private String content;

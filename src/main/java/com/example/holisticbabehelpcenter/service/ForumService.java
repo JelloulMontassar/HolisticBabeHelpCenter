@@ -24,6 +24,11 @@ public class ForumService {
         category.setName(name);
         return categoryRepository.save(category);
     }
+    public List<Comment> getCommentsByPostId(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        return post.getComments();
+    }
     public List<Post> getPostsByThreadId(Long threadId) {
         Threads thread = threadRepository.findById(threadId)
                 .orElseThrow(() -> new RuntimeException("Thread not found"));
@@ -101,11 +106,8 @@ public class ForumService {
     }
 
     // Comment methods
-    public Comment createComment(Post post, String content, User author) {
-        Comment comment = new Comment();
-        comment.setPost(post);
-        comment.setContent(content);
-        comment.setAuthor(author);
+    public Comment createComment(Comment comment) {
+
         return commentRepository.save(comment);
     }
 

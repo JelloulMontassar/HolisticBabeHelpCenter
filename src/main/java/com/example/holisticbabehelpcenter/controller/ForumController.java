@@ -1,6 +1,7 @@
 package com.example.holisticbabehelpcenter.controller;
 
 import com.example.holisticbabehelpcenter.dto.CategoryDTO;
+import com.example.holisticbabehelpcenter.dto.CommentDTO;
 import com.example.holisticbabehelpcenter.dto.PostDTO;
 import com.example.holisticbabehelpcenter.dto.ThreadsDTO;
 import com.example.holisticbabehelpcenter.model.*;
@@ -131,18 +132,27 @@ public List<CategoryDTO> getCategories() {
         forumService.deletePost(id);
     }
 
-    @PostMapping("/comments")
-    public Comment createComment(@RequestParam Long postId, @RequestParam String content, Authentication authentication) {
+    @PostMapping("/posts/{postId}/comments")
+    public Comment createComment(@PathVariable Long postId,Comment comment, Authentication authentication) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User author = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
-        return forumService.createComment(post, content, author);
+        comment.setAuthor(author);
+        comment.setPost(post);
+        comment.setCreatedAt(LocalDateTime.now());
+        return forumService.createComment(comment);
     }
 
     @GetMapping("/comments")
     public List<Comment> getComments() {
         return forumService.getAllComments();
     }
-
+    @GetMapping("/posts/{postId}/comments")
+    public List<CommentDTO> getCommentsByPostId(@PathVariable Long postId) {
+        List<Comment> comments = forumService.getCommentsByPostId(postId);
+        return comments.stream()
+                .map(comment -> modelMapper.map(comment, CommentDTO.class))
+                .collect(Collectors.toList());
+    }
     @GetMapping("/comments/{id}")
     public Comment getComment(@PathVariable Long id) {
         return forumService.getCommentById(id);

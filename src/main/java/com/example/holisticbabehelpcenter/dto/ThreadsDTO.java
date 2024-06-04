@@ -1,5 +1,6 @@
 package com.example.holisticbabehelpcenter.dto;
 
+import com.example.holisticbabehelpcenter.model.Category;
 import com.example.holisticbabehelpcenter.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,5 +18,5 @@ public class ThreadsDTO {
     private String title;
     private User author;
     private List<Long> postIds;
-    private Long categoryId;
+
 }
