@@ -1,5 +1,6 @@
 package com.example.holisticbabehelpcenter.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Threads {
     private User author;
     @OneToMany(mappedBy = "threads")
     private List<Post> posts;
+    @JsonIgnore
     @ManyToOne
     private Category category;
 
