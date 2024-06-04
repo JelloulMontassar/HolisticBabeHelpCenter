@@ -41,9 +41,12 @@ public class ForumController {
     }
 
     @GetMapping("/categories")
-    public List<Category> getCategories() {
-        return forumService.getAllCategories();
-    }
+public List<CategoryDTO> getCategories() {
+    List<Category> categories = forumService.getAllCategories();
+    return categories.stream()
+                     .map(category -> modelMapper.map(category, CategoryDTO.class))
+                     .collect(Collectors.toList());
+}
 
     @GetMapping("/categories/{id}")
     public CategoryDTO getCategory(@PathVariable Long id) {
