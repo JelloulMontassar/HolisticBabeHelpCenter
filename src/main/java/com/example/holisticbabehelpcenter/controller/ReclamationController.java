@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -84,6 +85,7 @@ public class ReclamationController {
         System.out.println(user.getEmail());
         reclamation.setUser(user);
         reclamation.setResult("Not resolved");
+        reclamation.setReclamationDate(LocalDate.now());
         Reclamation createdReclamation = reclamationService.createReclamation(reclamation);
         Notification notification = new Notification();
         User user2 = userService.getUserById("admin@admin.com");

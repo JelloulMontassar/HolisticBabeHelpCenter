@@ -46,7 +46,7 @@ public class SecurityConfiguration  {
                         req.requestMatchers( "/user/Register","/user/auth","/user/ConfirmAccount/**","/user/forgot-password/**").permitAll()
                                 .requestMatchers("/config/disableAccount/**", "/config/enableAccount/**","/config/registerAdmin","/config/getAllUsers").hasAnyRole("ADMIN")
                                 .requestMatchers("/reclamations/","/reclamations/user/**","/reclamations/reclamation/resolve/").hasRole("ADMIN")
-                                .requestMatchers("/reclamations/create/**").hasRole("USER")
+                                .requestMatchers("/reclamations/create/**").hasAnyRole("ADMIN","USER")
                                 .requestMatchers("/ws/**").permitAll()
                                 .requestMatchers("/profile/**").authenticated()
                                 .requestMatchers("/user/logout").authenticated()
