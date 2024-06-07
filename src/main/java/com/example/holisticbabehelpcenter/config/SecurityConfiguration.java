@@ -52,6 +52,7 @@ public class SecurityConfiguration  {
                                 .requestMatchers("/user/logout").authenticated()
                                 .requestMatchers("/ExchangedMessages/**").authenticated()
                                 .requestMatchers("/user/onlineUsers").permitAll()
+                                .requestMatchers("/faqs").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

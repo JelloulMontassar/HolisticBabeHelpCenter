@@ -13,6 +13,7 @@ import com.example.holisticbabehelpcenter.service.ForumService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,12 +43,12 @@ public class ForumController {
     }
 
     @GetMapping("/categories")
-public List<CategoryDTO> getCategories() {
-    List<Category> categories = forumService.getAllCategories();
-    return categories.stream()
-                     .map(category -> modelMapper.map(category, CategoryDTO.class))
-                     .collect(Collectors.toList());
-}
+    public List<CategoryDTO> getCategories() {
+        List<Category> categories = forumService.getAllCategories();
+        return categories.stream()
+                         .map(category -> modelMapper.map(category, CategoryDTO.class))
+                         .collect(Collectors.toList());
+    }
 
     @GetMapping("/categories/{id}")
     public CategoryDTO getCategory(@PathVariable Long id) {
@@ -85,10 +86,23 @@ public List<CategoryDTO> getCategories() {
     public Threads getThread(@PathVariable Long id) {
         return forumService.getThreadById(id);
     }
-
+    @GetMapping("/threads")
+    public List<ThreadsDTO> getThreads() {
+        List<Threads> threads = forumService.getAllThreads();
+        return threads.stream()
+                .map(thread -> modelMapper.map(thread, ThreadsDTO.class))
+                .collect(Collectors.toList());
+    }
     @PutMapping("/threads")
     public Threads updateThread(@RequestBody Threads thread) {
         return forumService.updateThread(thread);
+    }
+    @PutMapping("/threads/{id}/update")
+    public ResponseEntity<ThreadsDTO> updateThreadTitle(@RequestBody Threads thread) {
+        Threads thread1 = forumService.getThreadById(thread.getId());
+        thread1.setTitle(thread.getTitle());
+        Threads updatedThread = forumService.updateThread(thread1);
+        return ResponseEntity.ok(modelMapper.map(updatedThread, ThreadsDTO.class));
     }
 
     @DeleteMapping("/threads/{id}")
@@ -133,12 +147,14 @@ public List<CategoryDTO> getCategories() {
     }
 
     @PostMapping("/posts/{postId}/comments")
-    public Comment createComment(@PathVariable Long postId,Comment comment, Authentication authentication) {
+    public Comment createComment(@PathVariable Long postId,@RequestBody  Comment comment, Authentication authentication) {
+        System.out.println(comment.getContent());
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
         User author = userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new RuntimeException("User not found"));
         comment.setAuthor(author);
         comment.setPost(post);
         comment.setCreatedAt(LocalDateTime.now());
+        comment.setContent(comment.getContent());
         return forumService.createComment(comment);
     }
 

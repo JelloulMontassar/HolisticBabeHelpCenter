@@ -22,7 +22,7 @@ public class Threads {
     private String title;
     @ManyToOne
     private User author;
-    @OneToMany(mappedBy = "threads")
+    @OneToMany(mappedBy = "threads", cascade = CascadeType.REMOVE)
     private List<Post> posts;
     @JsonIgnore
     @ManyToOne
